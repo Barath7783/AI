@@ -1,0 +1,41 @@
+import pandas as pd 
+from sklearn.model_selection import train_test_split 
+from sklearn.tree import DecisionTreeClassifier, plot_tree 
+from sklearn.metrics import accuracy_score, classification_report 
+import matplotlib.pyplot as plt 
+df = pd.read_csv("iris.csv") 
+print(df.head()) 
+print(df.describe()) 
+print(df.isnull().sum()) 
+X = df.drop('Species', axis=1) 
+y = df['Species'] 
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, 
+random_state=42) 
+dt_model = DecisionTreeClassifier(random_state=42) 
+dt_model.fit(X_train, y_train) 
+y_pred = dt_model.predict(X_test) 
+accuracy = accuracy_score(y_test, y_pred) 
+print(f'Accuracy: {accuracy}') 
+print(classification_report(y_test, y_pred)) 
+import joblib 
+joblib.dump(dt_model, 'iris_decision_tree.pkl') 
+import pandas as pd 
+from sklearn.tree import DecisionTreeClassifier 
+import joblib 
+dt_model = joblib.load('iris_decision_tree.pkl') 
+new_data = pd.DataFrame({ 
+    'SepalLengthCm': [5.1, 6.2, 4.7], 
+    'SepalWidthCm': [3.5, 3.4, 3.2], 
+    'PetalLengthCm': [1.4, 5.4, 1.6], 
+    'PetalWidthCm': [0.2, 2.3, 0.2] 
+}) 
+ 
+predictions = dt_model.predict(new_data) 
+print("Predictions:") 
+for pred in predictions: 
+    print(pred) 
+ 
+plt.figure(figsize=(12, 8)) 
+plot_tree(dt_model, feature_names=list(X.columns), 
+class_names=df['Species'].unique().tolist(), filled=True) 
+plt.show()
